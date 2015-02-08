@@ -33,8 +33,8 @@
                                 <rect key="frame" x="16" y="91" width="568" height="452"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="twitCell" rowHeight="60" id="MuH-AY-stN" customClass="UPKTwitCell">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="twitCell" rowHeight="9999" id="MuH-AY-stN" customClass="UPKTwitCell">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="9999"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="MuH-AY-stN" id="f5R-ZS-Lkt">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -70,8 +70,8 @@
                                             <outlet property="twitUserScreenName" destination="1y2-Ao-QO8" id="sh2-3j-mpl"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="twitImgCell" rowHeight="90" id="pYO-YN-ehy" customClass="UPKTwitCell">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="twitImgCell" rowHeight="9999" id="pYO-YN-ehy" customClass="UPKTwitCell">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="9999"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="pYO-YN-ehy" id="mMv-Dr-Uhl">
                                             <autoresizingMask key="autoresizingMask"/>

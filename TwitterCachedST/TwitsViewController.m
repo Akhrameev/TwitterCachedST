@@ -228,12 +228,6 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
         cell = (UPKTwitCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
         [self.prototypeCellsDic setObject:cell forKey:cellIdentifier];
     }
-    [cell prepareViewWithUserScreenName:userScreenName andText:twitText andImgData:imgData];
-    
-    
-    // Make sure the constraints have been added to this cell, since it may have just been created from scratch
-    [cell setNeedsUpdateConstraints];
-    [cell updateConstraintsIfNeeded];
     
     // The cell's width must be set to the same size it will end up at once it is in the table view.
     // This is important so that we'll get the correct height for different table view widths, since our cell's
@@ -244,6 +238,8 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
     // if you are using a grouped table view style where cells have insets to the edges of the table view,
     // you'll need to adjust the cell.bounds.size.width to be smaller than the full width of the table view we just
     // set it to above. See http://stackoverflow.com/questions/3647242 for discussion on the section index width.
+    
+    [cell prepareViewWithUserScreenName:userScreenName andText:twitText andImgData:imgData];
     
     // Do the layout pass on the cell, which will calculate the frames for all the views based on the constraints
     // (Note that the preferredMaxLayoutWidth is set on multi-line UILabels inside the -[layoutSubviews] method

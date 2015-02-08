@@ -32,7 +32,6 @@
     if (imgData) {
         self.twitImgView.image = [UIImage imageWithData:imgData];
     }
-    [self layoutIfNeeded];
     self.twitUserScreenName.text = screenName;
     self.twitText.text = text;
 }
