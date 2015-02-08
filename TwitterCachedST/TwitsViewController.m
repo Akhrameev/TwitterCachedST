@@ -18,7 +18,6 @@
 #define UPK_AUTOUPDATE 1
 
 const NSString *UpdateTwitsNotificationIdentifier   = @"UpdateTwitsNotificationIdentifier";
-const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotificationIdentifier";
 
 @interface TwitsViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -39,11 +38,14 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
     self.prototypeCellsDic = [NSMutableDictionary dictionary];
     // Do any additional setup after loading the view, typically from a nib.
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTwits:) name:[UpdateTwitsNotificationIdentifier copy] object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(gotImageData:) name:[GotImageDataNotificationIdentifier copy] object:nil];
     [self.tableView setTableFooterView:[UIView new]];
     //чтобы не было некрасивых линий внизу таблицы
     [self.view addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap:)]];
     [self loadIt:nil];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)tap:(UIGestureRecognizer *)tapGestre {
@@ -172,11 +174,11 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath requestImg:(BOOL)requestImg {
     NSString *userScreenName = nil;
     NSString *twitText = nil;
-    NSData *imgData = nil;
-    [self tableView:tableView dataForRowAtIndexPath:indexPath placeHereImgData:&imgData placeHereUserScreenName:&userScreenName placeHereTwitText:&twitText];
-    NSString *cellIdentifier = [self cellIdentifierForCellWithImgData:(imgData != nil)];
+    NSString *imgUrlString = nil;
+    [self tableView:tableView dataForRowAtIndexPath:indexPath placeHereUserScreenName:&userScreenName placeHereTwitText:&twitText placeHereImgUrlString:&imgUrlString];
+    NSString *cellIdentifier = [self cellIdentifierForCellWithImgData:[[UPKPreferences sharedPreferences] avatarsEnabled]];
     UPKTwitCell *cell = (UPKTwitCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    [cell prepareViewWithUserScreenName:userScreenName andText:twitText andImgData:imgData];
+    [cell prepareViewWithUserScreenName:userScreenName andText:twitText andImgUrlString:imgUrlString];
     return cell;
 }
 
@@ -188,16 +190,10 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
     return hasImgData ? cellImageIdentifier : cellIdentifier;
 }
 
-- (void)tableView:(UITableView *)tableView dataForRowAtIndexPath:(NSIndexPath *)indexPath placeHereImgData:(NSData **)imgData placeHereUserScreenName:(NSString **)userScreenName placeHereTwitText:(NSString **)twitText {
+- (void)tableView:(UITableView *)tableView dataForRowAtIndexPath:(NSIndexPath *)indexPath placeHereUserScreenName:(NSString **)userScreenName placeHereTwitText:(NSString **)twitText placeHereImgUrlString:(NSString **)imgUrlString {
     UPKTwit *twit = [self.container.twits objectAtIndex:indexPath.row];
     UPKUser *user = [self.container.users objectForKey:twit.userIdString];
     NSString * userScreenNameLocal = user.screenName;
-    NSData *imgDataLocal = nil;
-    if ([[UPKPreferences sharedPreferences] avatarsEnabled]) {
-        //загрузка данных на самом деле асинхронна - когда данные новые прийдут, прийдет оповещение и я вызову обновление нужных ячеек таблицы
-        imgDataLocal = [[UPKDAO sharedDAO] dataForUrlString:user.profileImgUrl andNotification:[GotImageDataNotificationIdentifier copy]];
-        //если же данные есть в кеше - то разу их помещу на экран
-    }
 #if (UPK_SHOW_DATE_STRING)
     NSString *dateString = twit.dateString;
     if (dateString) {
@@ -210,8 +206,8 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
     if (userScreenName) {
         *userScreenName = userScreenNameLocal;
     }
-    if (imgData && imgDataLocal) {
-        *imgData = imgDataLocal;
+    if (imgUrlString) {
+        *imgUrlString = user.profileImgUrl;
     }
 }
 
@@ -220,7 +216,7 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *userScreenName = nil;
     NSString *twitText = nil;
-    [self tableView:tableView dataForRowAtIndexPath:indexPath placeHereImgData:nil placeHereUserScreenName:&userScreenName placeHereTwitText:&twitText];
+    [self tableView:tableView dataForRowAtIndexPath:indexPath placeHereUserScreenName:&userScreenName placeHereTwitText:&twitText placeHereImgUrlString:nil];
     NSString *cellIdentifier = [self cellIdentifierForCellWithImgData:[[UPKPreferences sharedPreferences] avatarsEnabled]]; //высота при включенных картинках будет "с запасом"((
     UPKTwitCell *cell = [self.prototypeCellsDic objectForKey:cellIdentifier];
     if (!cell) {
@@ -238,7 +234,7 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
     // you'll need to adjust the cell.bounds.size.width to be smaller than the full width of the table view we just
     // set it to above. See http://stackoverflow.com/questions/3647242 for discussion on the section index width.
     
-    [cell prepareViewWithUserScreenName:userScreenName andText:twitText andImgData:nil];
+    [cell prepareViewWithUserScreenName:userScreenName andText:twitText andImgUrlString:nil];
     
     // Do the layout pass on the cell, which will calculate the frames for all the views based on the constraints
     // (Note that the preferredMaxLayoutWidth is set on multi-line UILabels inside the -[layoutSubviews] method
@@ -254,36 +250,6 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
     height += 1;
     
     return height;
-}
-
-#pragma mark - gotImageData notification
-
-- (void)gotImageData:(NSNotification *)note {
-    //пришли данные картинки
-    if (![[UPKPreferences sharedPreferences] avatarsEnabled]) {
-        return;
-    }
-    NSString *urlString = note.object;
-    UPKTwitsAndUsersContainer *currentContainer = [self.container copy];
-    NSMutableSet *userIds = [NSMutableSet set];
-    for (NSString *idString in currentContainer.users) {
-        UPKUser *user = [currentContainer.users objectForKey:idString];
-        if ([user.profileImgUrl isEqualToString:urlString]) {
-            [userIds addObject:idString];
-        }
-    }
-    NSArray *twitsTouchedByThisImg = [currentContainer.twits filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"userIdString in %@", userIds]];
-    NSMutableArray *rowsToReload = [NSMutableArray array];
-    for (UPKTwit *twit in twitsTouchedByThisImg) {
-        NSUInteger index = [currentContainer.twits indexOfObject:twit];
-        if (index != NSNotFound) {
-            [rowsToReload addObject:[NSIndexPath indexPathForRow:index inSection:0]];
-        }
-    }
-    if (rowsToReload.count) {
-        //эти ячейки связаны с этой картинкой - их пора обновить
-        [self.tableView reloadRowsAtIndexPaths:rowsToReload withRowAnimation:UITableViewRowAnimationAutomatic];
-    }
 }
 
 @end

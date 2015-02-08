@@ -8,8 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
+extern const NSString *GotImageDataNotificationIdentifier;
+
 @interface UPKTwitCell : UITableViewCell
 
-- (void)prepareViewWithUserScreenName:(NSString *)screenName andText:(NSString *)text andImgData:(NSData *)imgData;
+- (void)prepareViewWithUserScreenName:(NSString *)screenName andText:(NSString *)text andImgUrlString:(NSString *)imgUrlString;
 
 @end
