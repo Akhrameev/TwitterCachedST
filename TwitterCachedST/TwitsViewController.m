@@ -174,7 +174,7 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
     NSString *twitText = nil;
     NSData *imgData = nil;
     [self tableView:tableView dataForRowAtIndexPath:indexPath placeHereImgData:&imgData placeHereUserScreenName:&userScreenName placeHereTwitText:&twitText];
-    NSString *cellIdentifier = [self cellIdentifierForImgData:imgData];
+    NSString *cellIdentifier = [self cellIdentifierForCellWithImgData:(imgData != nil)];
     UPKTwitCell *cell = (UPKTwitCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     [cell prepareViewWithUserScreenName:userScreenName andText:twitText andImgData:imgData];
     return cell;
@@ -182,10 +182,10 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
 
 #pragma mark - UITableViewCell data helper
 
-- (NSString *)cellIdentifierForImgData:(NSData *)imgData {
+- (NSString *)cellIdentifierForCellWithImgData:(BOOL)hasImgData {
     static NSString *cellIdentifier = @"twitCell";
     static NSString *cellImageIdentifier = @"twitImgCell";
-    return imgData ? cellImageIdentifier : cellIdentifier;
+    return hasImgData ? cellImageIdentifier : cellIdentifier;
 }
 
 - (void)tableView:(UITableView *)tableView dataForRowAtIndexPath:(NSIndexPath *)indexPath placeHereImgData:(NSData **)imgData placeHereUserScreenName:(NSString **)userScreenName placeHereTwitText:(NSString **)twitText {
@@ -220,9 +220,8 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *userScreenName = nil;
     NSString *twitText = nil;
-    NSData *imgData = nil;
-    [self tableView:tableView dataForRowAtIndexPath:indexPath placeHereImgData:&imgData placeHereUserScreenName:&userScreenName placeHereTwitText:&twitText];
-    NSString *cellIdentifier = [self cellIdentifierForImgData:imgData];
+    [self tableView:tableView dataForRowAtIndexPath:indexPath placeHereImgData:nil placeHereUserScreenName:&userScreenName placeHereTwitText:&twitText];
+    NSString *cellIdentifier = [self cellIdentifierForCellWithImgData:[[UPKPreferences sharedPreferences] avatarsEnabled]]; //высота при включенных картинках будет "с запасом"((
     UPKTwitCell *cell = [self.prototypeCellsDic objectForKey:cellIdentifier];
     if (!cell) {
         cell = (UPKTwitCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
@@ -239,7 +238,7 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
     // you'll need to adjust the cell.bounds.size.width to be smaller than the full width of the table view we just
     // set it to above. See http://stackoverflow.com/questions/3647242 for discussion on the section index width.
     
-    [cell prepareViewWithUserScreenName:userScreenName andText:twitText andImgData:imgData];
+    [cell prepareViewWithUserScreenName:userScreenName andText:twitText andImgData:nil];
     
     // Do the layout pass on the cell, which will calculate the frames for all the views based on the constraints
     // (Note that the preferredMaxLayoutWidth is set on multi-line UILabels inside the -[layoutSubviews] method
