@@ -77,7 +77,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ScreenName" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="MNh-rP-Pxo">
-                                                    <rect key="frame" x="0.0" y="0.0" width="76" height="14.5"/>
+                                                    <rect key="frame" x="0.0" y="8" width="76" height="6.5"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="76" id="OCK-NP-jLH"/>
                                                     </constraints>
@@ -85,7 +85,7 @@
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Text" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="Ljv-Qp-0pN">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Text" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="Ljv-Qp-0pN">
                                                     <rect key="frame" x="84" y="8" width="476" height="74"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -104,12 +104,11 @@
                                                 <constraint firstItem="mHl-Tz-dfS" firstAttribute="top" secondItem="MNh-rP-Pxo" secondAttribute="bottom" constant="8" id="F9Z-Wu-x3A"/>
                                                 <constraint firstItem="Ljv-Qp-0pN" firstAttribute="top" secondItem="mMv-Dr-Uhl" secondAttribute="top" constant="8" id="SO3-uo-9g1"/>
                                                 <constraint firstAttribute="bottom" secondItem="Ljv-Qp-0pN" secondAttribute="bottom" constant="7.5" id="Wx6-Jv-1l4"/>
-                                                <constraint firstItem="MNh-rP-Pxo" firstAttribute="top" secondItem="mMv-Dr-Uhl" secondAttribute="top" id="XUc-UY-cTJ"/>
+                                                <constraint firstItem="MNh-rP-Pxo" firstAttribute="top" secondItem="mMv-Dr-Uhl" secondAttribute="top" constant="8" id="XUc-UY-cTJ"/>
                                                 <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="mHl-Tz-dfS" secondAttribute="bottom" constant="8" id="bXB-ir-7j7"/>
                                                 <constraint firstItem="mHl-Tz-dfS" firstAttribute="centerX" secondItem="MNh-rP-Pxo" secondAttribute="centerX" id="ehz-84-AyZ"/>
                                                 <constraint firstAttribute="trailing" secondItem="Ljv-Qp-0pN" secondAttribute="trailing" constant="8" id="jCs-su-drg"/>
                                                 <constraint firstItem="MNh-rP-Pxo" firstAttribute="leading" secondItem="mMv-Dr-Uhl" secondAttribute="leading" id="pDz-tw-m81"/>
-                                                <constraint firstAttribute="centerY" secondItem="Ljv-Qp-0pN" secondAttribute="centerY" id="r0g-xm-N1F"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
@@ -121,6 +120,7 @@
                                 </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="9pv-A4-QxB" id="NX6-hi-9R2"/>
+                                    <outlet property="delegate" destination="9pv-A4-QxB" id="q6P-Zt-aon"/>
                                 </connections>
                             </tableView>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="ksenks" borderStyle="roundedRect" placeholder="screen_name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="hxZ-Ih-h8a">

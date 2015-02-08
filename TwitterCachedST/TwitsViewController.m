@@ -20,19 +20,23 @@
 const NSString *UpdateTwitsNotificationIdentifier   = @"UpdateTwitsNotificationIdentifier";
 const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotificationIdentifier";
 
-@interface TwitsViewController () <UITableViewDataSource>
+@interface TwitsViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) UPKTwitsAndUsersContainer *container;
 @property (weak, nonatomic) IBOutlet UILabel *timerIndicator;
 @property (nonatomic, strong) NSTimer *reloadTimer;
 @property (nonatomic, assign) NSUInteger numberOfTicks;
 @property (weak, nonatomic) IBOutlet UITextField *screenNameTextField;
+
+//в этом словарехранятся ячейки-прототипы для динамического расчета высоты ячейки на iOS 7 и 8 (8-ка бы и сама справилась, но 7-ка-то нет)
+@property (nonatomic, strong) NSMutableDictionary *prototypeCellsDic;
 @end
 
 @implementation TwitsViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.prototypeCellsDic = [NSMutableDictionary dictionary];
     // Do any additional setup after loading the view, typically from a nib.
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTwits:) name:[UpdateTwitsNotificationIdentifier copy] object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(gotImageData:) name:[GotImageDataNotificationIdentifier copy] object:nil];
@@ -162,26 +166,99 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *cellIdentifier = @"twitCell";
-    UPKTwitCell *cell = (UPKTwitCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    UPKTwit *twit = [self.container.twits objectAtIndex:indexPath.row];
-    NSString *twitText = twit.text;
-    UPKUser *user = [self.container.users objectForKey:twit.userIdString];
-    NSString * userScreenName = user.screenName;
+    return [self tableView:tableView cellForRowAtIndexPath:indexPath requestImg:YES];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath requestImg:(BOOL)requestImg {
+    NSString *userScreenName = nil;
+    NSString *twitText = nil;
     NSData *imgData = nil;
+    [self tableView:tableView dataForRowAtIndexPath:indexPath placeHereImgData:&imgData placeHereUserScreenName:&userScreenName placeHereTwitText:&twitText];
+    NSString *cellIdentifier = [self cellIdentifierForImgData:imgData];
+    UPKTwitCell *cell = (UPKTwitCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    [cell prepareViewWithUserScreenName:userScreenName andText:twitText andImgData:imgData];
+    return cell;
+}
+
+#pragma mark - UITableViewCell data helper
+
+- (NSString *)cellIdentifierForImgData:(NSData *)imgData {
+    static NSString *cellIdentifier = @"twitCell";
+    static NSString *cellImageIdentifier = @"twitImgCell";
+    return imgData ? cellImageIdentifier : cellIdentifier;
+}
+
+- (void)tableView:(UITableView *)tableView dataForRowAtIndexPath:(NSIndexPath *)indexPath placeHereImgData:(NSData **)imgData placeHereUserScreenName:(NSString **)userScreenName placeHereTwitText:(NSString **)twitText {
+    UPKTwit *twit = [self.container.twits objectAtIndex:indexPath.row];
+    UPKUser *user = [self.container.users objectForKey:twit.userIdString];
+    NSString * userScreenNameLocal = user.screenName;
+    NSData *imgDataLocal = nil;
     if ([[UPKPreferences sharedPreferences] avatarsEnabled]) {
         //загрузка данных на самом деле асинхронна - когда данные новые прийдут, прийдет оповещение и я вызову обновление нужных ячеек таблицы
-        imgData = [[UPKDAO sharedDAO] dataForUrlString:user.profileImgUrl andNotification:[GotImageDataNotificationIdentifier copy]];
+        imgDataLocal = [[UPKDAO sharedDAO] dataForUrlString:user.profileImgUrl andNotification:[GotImageDataNotificationIdentifier copy]];
         //если же данные есть в кеше - то разу их помещу на экран
     }
 #if (UPK_SHOW_DATE_STRING)
     NSString *dateString = twit.dateString;
     if (dateString) {
-        userScreenName = [NSString stringWithFormat:@"%@ %@", userScreenName, dateString];
+        userScreenNameLocal = [NSString stringWithFormat:@"%@ %@", userScreenName, dateString];
     }
 #endif
+    if (twitText) {
+        *twitText = twit.text;
+    }
+    if (userScreenName) {
+        *userScreenName = userScreenNameLocal;
+    }
+    if (imgData && imgDataLocal) {
+        *imgData = imgDataLocal;
+    }
+}
+
+#pragma mark - UITableViewDelegate
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSString *userScreenName = nil;
+    NSString *twitText = nil;
+    NSData *imgData = nil;
+    [self tableView:tableView dataForRowAtIndexPath:indexPath placeHereImgData:&imgData placeHereUserScreenName:&userScreenName placeHereTwitText:&twitText];
+    NSString *cellIdentifier = [self cellIdentifierForImgData:imgData];
+    UPKTwitCell *cell = [self.prototypeCellsDic objectForKey:cellIdentifier];
+    if (!cell) {
+        cell = (UPKTwitCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        [self.prototypeCellsDic setObject:cell forKey:cellIdentifier];
+    }
     [cell prepareViewWithUserScreenName:userScreenName andText:twitText andImgData:imgData];
-    return cell;
+    
+    
+    // Make sure the constraints have been added to this cell, since it may have just been created from scratch
+    [cell setNeedsUpdateConstraints];
+    [cell updateConstraintsIfNeeded];
+    
+    // The cell's width must be set to the same size it will end up at once it is in the table view.
+    // This is important so that we'll get the correct height for different table view widths, since our cell's
+    // height depends on its width due to the multi-line UILabel word wrapping. Don't need to do this above in
+    // -[tableView:cellForRowAtIndexPath:] because it happens automatically when the cell is used in the table view.
+    cell.bounds = CGRectMake(0.0f, 0.0f, CGRectGetWidth(tableView.bounds), CGRectGetHeight(cell.bounds));
+    // NOTE: if you are displaying a section index (e.g. alphabet along the right side of the table view), or
+    // if you are using a grouped table view style where cells have insets to the edges of the table view,
+    // you'll need to adjust the cell.bounds.size.width to be smaller than the full width of the table view we just
+    // set it to above. See http://stackoverflow.com/questions/3647242 for discussion on the section index width.
+    
+    // Do the layout pass on the cell, which will calculate the frames for all the views based on the constraints
+    // (Note that the preferredMaxLayoutWidth is set on multi-line UILabels inside the -[layoutSubviews] method
+    // in the UITableViewCell subclass
+    [cell setNeedsLayout];
+    [cell layoutIfNeeded];
+    
+    // Get the actual height required for the cell
+    CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+    
+    // Add an extra point to the height to account for the cell separator, which is added between the bottom
+    // of the cell's contentView and the bottom of the table view cell.
+    height += 1;
+    
+    return height;
 }
 
 #pragma mark - gotImageData notification

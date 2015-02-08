@@ -17,6 +17,12 @@
 
 @implementation UPKTwitCell
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    [self.contentView layoutIfNeeded];
+    self.twitText.preferredMaxLayoutWidth = CGRectGetWidth(self.twitText.frame);
+}
+
 - (void)prepareForReuse {
     [self setNeedsUpdateConstraints];
     [self.layer removeAllAnimations];
