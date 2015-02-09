@@ -89,8 +89,8 @@
     //стандартный способ не подходил - пришлось кастомизировать
     NSMutableString * output = [NSMutableString string];
     const unsigned char * source = (const unsigned char *)[string UTF8String];
-    int sourceLen = strlen((const char *)source);
-    for (int i = 0; i < sourceLen; ++i) {
+    unsigned long sourceLen = strlen((const char *)source);
+    for (unsigned long i = 0; i < sourceLen; ++i) {
         const unsigned char thisChar = source[i];
         if (thisChar == '.' || thisChar == '-' || thisChar == '_' ||
                    (thisChar >= 'a' && thisChar <= 'z') ||
