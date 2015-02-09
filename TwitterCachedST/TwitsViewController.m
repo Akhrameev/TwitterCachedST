@@ -182,6 +182,10 @@ const NSString *UpdateTwitsNotificationIdentifier   = @"UpdateTwitsNotificationI
     return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return [[UPKPreferences sharedPreferences] avatarsEnabled] ? 100 : 40;
+}
+
 #pragma mark - UITableViewCell data helper
 
 - (NSString *)cellIdentifierForCellWithImgData:(BOOL)hasImgData {
