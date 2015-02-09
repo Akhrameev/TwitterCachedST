@@ -66,6 +66,7 @@ NSString* const UPKDataFromDB = @"UPKDataFromDB";
                         });
                         break;
                     }
+                    [rs close];
                 }];
             });
         }
@@ -128,6 +129,7 @@ NSString* const UPKDataFromDB = @"UPKDataFromDB";
                 [twitsAndUsers addObject:twit];
                 [userIdsInUse addObject:twit.userIdString];
             }
+            [rs close];
             if (userIdsInUse.count) {
                 rs = [db executeQuery:@"select * from users where idString in (?)", [userIdsInUse.allObjects componentsJoinedByString:@","]];
                 while ([rs next]) {
@@ -137,6 +139,7 @@ NSString* const UPKDataFromDB = @"UPKDataFromDB";
                     user.profileImgUrl = [rs stringForColumn:@"profileImgUrl"];
                     [twitsAndUsers addObject:user];
                 }
+                [rs close];
             }
         }];
         UPKTwitsAndUsersContainer *container = [[UPKTwitsAndUsersContainer alloc] initWithObjectsArray:twitsAndUsers];
