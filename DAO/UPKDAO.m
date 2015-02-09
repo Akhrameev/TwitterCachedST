@@ -49,6 +49,7 @@ NSString* const UPKDataFromDB = @"UPKDataFromDB";
             UPKClient *client = [UPKClient sharedClient];
             //клиент не кеширует данные - но если бы кешировал, можно было бы использовать возвращаемое значение и не дергать БД
             [client dataForUrlString:urlString andNotification:notification];
+#if (UPK_STORE_TWITS_AND_USERS)
             //поищу данные в БД (асинхронно)
             FMDatabaseQueue *queue = self.fmdbQueue;
             dispatch_async(_dbRequestQueue, ^{
@@ -69,6 +70,7 @@ NSString* const UPKDataFromDB = @"UPKDataFromDB";
                     [rs close];
                 }];
             });
+#endif
         }
     } else {
         //есть в кеше - сразу вернем
@@ -112,6 +114,8 @@ NSString* const UPKDataFromDB = @"UPKDataFromDB";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processTwits:) name:notification object:nil];
     [client twitListForUserScreenName:screenName withMaxId:maxTwitId orSinceId:sinceId andCount:count andNotification:notification];
     
+#if (UPK_STORE_TWITS_AND_USERS)
+    
     //теперь пока данные грузятся получу локальные данные, удовлетворяющие этому же запросу
     __block NSMutableArray *twitsAndUsers = [NSMutableArray arrayWithCapacity:count];
     FMDatabaseQueue *queue = self.fmdbQueue;
@@ -150,6 +154,7 @@ NSString* const UPKDataFromDB = @"UPKDataFromDB";
             [[NSNotificationCenter defaultCenter] postNotificationName:notification object:weakContainer userInfo:@{UPKDataFromDB:@(YES)}];
         });
     });
+#endif
 }
 
 - (void)processTwits:(NSNotification *)note {
@@ -157,6 +162,7 @@ NSString* const UPKDataFromDB = @"UPKDataFromDB";
         return;//это сообщение отправлял сам DAO
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self name:note.name object:nil];
+#if (UPK_STORE_TWITS_AND_USERS)
     //полученные здесь twits нужно будет сохранить (или обновить существующие данные)
     //простейший вариант - прибить те, что были и сохранить новые
     UPKTwitsAndUsersContainer *container = note.object;
@@ -186,6 +192,7 @@ NSString* const UPKDataFromDB = @"UPKDataFromDB";
             }
         }];
     });
+#endif
 }
 
 #pragma mark - DB methods

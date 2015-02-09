@@ -9,10 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "UPKTwitAsyncProvider.h"
 
-#ifndef USE_DUMP_RESPONSE
-    #define USE_DUMP_RESPONSE 0
-#endif
-
 extern NSString* const UPKRequestUrlString;
 
 @interface UPKClient : NSObject <UPKTwitAsyncProvider>

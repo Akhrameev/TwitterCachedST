@@ -1,0 +1,26 @@
+//
+//  PrefixHeader.pch
+//  TwitterCachedST
+//
+//  Created by Pavel Akhrameev on 09.02.15.
+//  Copyright (c) 2015 Pavel Akhrameev. All rights reserved.
+//
+
+#ifndef TwitterCachedST_PrefixHeader_pch
+#define TwitterCachedST_PrefixHeader_pch
+
+#define UPK_SHOW_DATE_STRING 0
+#define UPK_AUTOUPDATE 1
+#define UPK_STORE_TWITS_AND_USERS 1
+
+//если от сервера прийдет ошибка - для отладки удобно использовать данные из отдельного файлиска (с самым необходимым)
+#define USE_DUMP_RESPONSE 0
+//параметры для того, чтобы работать с твиттером
+#ifndef UPK_TWITTER_OAUTH_PARAMS
+    #define UPK_TWITTER_OAUTH_PARAMS
+    #define UPK_TWITTER_OAUTH_CONSUMER_KEY  @""
+    #define UPK_TWITTER_OAUTH_TOKEN         @"-"
+    #define UPK_HMAC_SECRET @"&"     //[Consumer Secret (API Secret)] & [Access Token Secret]
+#endif
+
+#endif

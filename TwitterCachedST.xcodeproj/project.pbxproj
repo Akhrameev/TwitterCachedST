@@ -113,6 +113,7 @@
 		1ADC34C41A863AF200C68F54 /* UPKTwitsAndUsersContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UPKTwitsAndUsersContainer.h; path = DataProviderProtocol/UPKTwitsAndUsersContainer.h; sourceTree = "<group>"; };
 		1ADC34C51A863AF200C68F54 /* UPKTwitsAndUsersContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UPKTwitsAndUsersContainer.m; path = DataProviderProtocol/UPKTwitsAndUsersContainer.m; sourceTree = "<group>"; };
 		1ADC34D51A88367C00C68F54 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
+		1ADC34D71A889F3200C68F54 /* PrefixHeader.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		1AE5F7D91A8011AE00699394 /* TwitterCachedST.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwitterCachedST.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE5F7DD1A8011AF00699394 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1AE5F7DE1A8011AF00699394 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -282,6 +283,7 @@
 				1AE5F7DD1A8011AF00699394 /* Info.plist */,
 				1AE5F7DE1A8011AF00699394 /* main.m */,
 				1ABEA2AA1A83BF1800840E83 /* TestResponse.json */,
+				1ADC34D71A889F3200C68F54 /* PrefixHeader.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -640,6 +642,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GCC_PREFIX_HEADER = TwitterCachedST/PrefixHeader.pch;
 				INFOPLIST_FILE = TwitterCachedST/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -654,6 +657,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GCC_PREFIX_HEADER = TwitterCachedST/PrefixHeader.pch;
 				INFOPLIST_FILE = TwitterCachedST/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -672,6 +676,7 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
+				GCC_PREFIX_HEADER = TwitterCachedST/PrefixHeader.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -695,6 +700,7 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
+				GCC_PREFIX_HEADER = TwitterCachedST/PrefixHeader.pch;
 				INFOPLIST_FILE = TwitterCachedSTTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (

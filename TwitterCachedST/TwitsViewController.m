@@ -14,9 +14,6 @@
 #import "UPKTwitCell.h"
 #import "UPKPreferences.h"
 
-#define UPK_SHOW_DATE_STRING 0
-#define UPK_AUTOUPDATE 1
-
 const NSString *UpdateTwitsNotificationIdentifier   = @"UpdateTwitsNotificationIdentifier";
 
 @interface TwitsViewController () <UITableViewDataSource, UITableViewDelegate>
