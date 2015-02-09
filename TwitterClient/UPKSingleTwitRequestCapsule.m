@@ -11,8 +11,6 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <CommonCrypto/CommonHMAC.h>
 
-#define UPK_HMAC_SECRET @""
-
 @implementation UPKSingleTwitRequestCapsule
 
 - (instancetype) initWithUrlString:(NSString *)urlString timeoutInterval:(NSTimeInterval)timeoutInterval requestParams:(NSDictionary *)requestParams notifyOnResponse:(NSString *)notification {
