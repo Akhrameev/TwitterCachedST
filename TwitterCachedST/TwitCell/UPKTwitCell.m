@@ -52,10 +52,22 @@ const NSString *GotImageDataNotificationIdentifier  = @"GotImageDataNotification
             if (imgData) {
                 self.twitImgView.image = [[UIImage alloc] initWithData:imgData];
             } else {
+                self.twitImgView.image = [self.class placeholderImage];
                 self.imgUrlString = imgUrlString;
             }
         }
+    } else {
+        self.twitImgView.image = [self.class placeholderImage];
     }
+}
+
++ (UIImage *)placeholderImage {
+    static UIImage *__img = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        __img = [UIImage imageNamed:@"avatar_placeholder"];
+    });
+    return __img;
 }
 
 #pragma mark  got img data
